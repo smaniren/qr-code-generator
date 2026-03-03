@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./src/styles.css" />
+  <link rel="icon" type="image/svg+xml" href="./favicon/favicon.svg" />
+  <link rel="manifest" href="./site.webmanifest" />
 </head>
 <body>
   <a class="skip-link" href="#mainContent">Direkt zum Inhalt springen</a>
@@ -140,16 +142,7 @@
     <p>Datenschutz: Token wird nicht auf einem Server gespeichert.</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-  <script>
-    window.addEventListener("DOMContentLoaded", function () {
-      if (typeof QRious === "undefined") {
-        const script = document.createElement("script");
-        script.src = "https://unpkg.com/qrious@4.0.2/dist/qrious.min.js";
-        document.head.appendChild(script);
-      }
-    });
-  </script>
+  <script src="./src/vendor/qrious.min.js"></script>
   <script src="./src/main.js"></script>
 </body>
 </html>

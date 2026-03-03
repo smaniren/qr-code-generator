@@ -65,9 +65,14 @@ You can also open `index.html` directly in a browser, but a local server is more
 qr-code-generator/
   index.html
   README.md
+  site.webmanifest
+  favicon/
+    favicon.svg
   src/
     main.js
     styles.css
+    vendor/
+      qrious.min.js
 ```
 
 ## Privacy Notes
@@ -80,7 +85,7 @@ qr-code-generator/
 
 - `TinyURL API-Token fehlt`: Enter a valid token first.
 - `HTTP 401/403`: Token invalid, expired, or missing API permissions.
-- `QR-Bibliothek wurde nicht geladen`: Refresh and check internet access to CDN.
+- `QR-Bibliothek wurde nicht geladen`: Confirm `src/vendor/qrious.min.js` is present and reachable by your local server.
 - No output after click: Open browser devtools and inspect network/API response.
 
 ## Next Ideas
