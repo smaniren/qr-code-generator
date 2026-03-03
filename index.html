@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Prompt in ChatGPT-URL umwandeln, per TinyURL kuerzen und als QR-Code exportieren." />
+  <title>Prompt zu TinyURL und QR-Code</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Direkt zum Inhalt springen</a>
+
+  <div class="page-bg" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+  </div>
+
+  <header class="site-header wrap">
+    <p class="eyebrow">TinyURL + QR Workflow</p>
+    <h1>Prompt -> ChatGPT URL -> TinyURL -> QR-Code</h1>
+    <p class="intro">
+      Prompt eingeben, URL automatisch erstellen, TinyURL erzeugen und QR-Code direkt kopieren oder als PNG speichern.
+    </p>
+  </header>
+
+  <main id="mainContent" class="wrap" tabindex="-1">
+    <div class="grid">
+      <section class="card card-input" aria-labelledby="generatorTitle">
+        <h2 id="generatorTitle">Generator</h2>
+
+        <form class="form" novalidate>
+          <fieldset class="field-group">
+            <legend class="sr-only">TinyURL Zugang</legend>
+
+            <label for="tokenInput">TinyURL API-Token</label>
+            <input
+              type="password"
+              id="tokenInput"
+              placeholder="API-Token hier einfuegen"
+              autocomplete="off"
+              spellcheck="false"
+              aria-describedby="tokenHint tokenSteps"
+            />
+
+            <p id="tokenHint" class="assist">
+              Der Token wird nur in der aktuellen Browser-Session gespeichert.
+            </p>
+
+            <aside id="tokenSteps" class="token-help" aria-label="Anleitung fuer TinyURL API Token">
+              <p class="small strong">So erhalten Sie den TinyURL API-Token:</p>
+              <ol class="token-steps">
+                <li>
+                  TinyURL Konto erstellen oder anmelden:
+                  <a href="https://tinyurl.com/app" target="_blank" rel="noopener noreferrer">tinyurl.com/app</a>
+                </li>
+                <li>
+                  Im Dashboard den Bereich <strong>Developer/API</strong> oeffnen.
+                </li>
+                <li>
+                  Einen neuen API-Token erzeugen und kopieren.
+                </li>
+                <li>
+                  Token in dieses Feld einfuegen.
+                </li>
+              </ol>
+              <p class="small">
+                API-Endpunkt: <span class="mono">https://api.tinyurl.com/create</span>
+              </p>
+            </aside>
+          </fieldset>
+
+          <fieldset class="field-group">
+            <legend class="sr-only">Prompt Eingabe</legend>
+
+            <label for="promptText">1) Prompt-Text</label>
+            <textarea
+              id="promptText"
+              placeholder="z. B. Erstelle einen kompakten 2-Tage-Reiseplan fuer Zuerich."
+              aria-describedby="promptHint"
+            ></textarea>
+            <p id="promptHint" class="assist">
+              Nach Klick auf den Button werden Long-URL, TinyURL und QR-Code in einem Schritt erzeugt.
+            </p>
+          </fieldset>
+
+          <div class="action-row">
+            <button class="primary" id="btnCreateAll" type="button" disabled aria-disabled="true">
+              2) Alles erstellen (URL -> TinyURL -> QR)
+            </button>
+          </div>
+        </form>
+
+        <div id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></div>
+
+        <section class="results" aria-labelledby="resultsTitle">
+          <h3 id="resultsTitle">Ergebnisse</h3>
+          <div class="out">
+            <div class="output-item">
+              <p class="output-label">Prompt (URL-encoded)</p>
+              <output id="encoded" class="mono output-value" aria-live="polite"></output>
+            </div>
+            <div class="output-item">
+              <p class="output-label">Long-URL (ChatGPT)</p>
+              <output id="longUrl" class="mono output-value" aria-live="polite"></output>
+            </div>
+            <div class="output-item">
+              <p class="output-label">TinyURL</p>
+              <output id="shortUrl" class="mono output-value" aria-live="polite"></output>
+            </div>
+          </div>
+        </section>
+
+        <div class="btns" role="group" aria-label="Ausgaben kopieren und QR exportieren">
+          <button id="dlText" type="button" disabled aria-disabled="true">Text kopieren</button>
+          <button id="dlLong" type="button" disabled aria-disabled="true">Long-URL kopieren</button>
+          <button id="dlShort" type="button" disabled aria-disabled="true">TinyURL kopieren</button>
+          <button id="dlQR" type="button" disabled aria-disabled="true">QR als PNG</button>
+        </div>
+      </section>
+
+      <aside class="card card-qr" aria-labelledby="qrTitle">
+        <h2 id="qrTitle">QR-Code Vorschau</h2>
+        <div class="qrBox">
+          <canvas id="qrCanvas" width="512" height="512" aria-label="QR-Code Vorschau">
+            Ihr Browser unterstuetzt kein Canvas-Element.
+          </canvas>
+        </div>
+        <p class="small">
+          Der QR-Code zeigt standardmaessig auf die TinyURL. Falls keine TinyURL erzeugt wurde, wird die Long-URL genutzt.
+        </p>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="wrap site-footer">
+    <p>Datenschutz: Token wird nicht auf einem Server gespeichert.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      if (typeof QRious === "undefined") {
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/qrious@4.0.2/dist/qrious.min.js";
+        document.head.appendChild(script);
+      }
+    });
+  </script>
+  <script src="./src/main.js"></script>
+</body>
+</html>
